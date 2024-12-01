@@ -14,6 +14,9 @@ applications = ["stream"]
 #Google OAuth Client Secret
 #gl-oauth-cl-secret = ""
 
+#Callback URL
+#gl-oauth-callback-url = ""
+
 [store]
 # Set store backend (file|consul)
 #backend = "file"
