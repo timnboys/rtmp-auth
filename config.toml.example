@@ -8,6 +8,12 @@ applications = ["stream"]
 # Allow CSRF cookie to be sent across http-connection, not recommended for production
 #insecure = false
 
+#Google OAuth Client ID
+#gl-oauth-cl-id = ""
+
+#Google OAuth Client Secret
+#gl-oauth-cl-secret = ""
+
 [store]
 # Set store backend (file|consul)
 #backend = "file"
