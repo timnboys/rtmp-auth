@@ -1,6 +1,4 @@
-module github.com/voc/rtmp-auth
-
-go 1.16
+module github.com/timnboys/rtmp-auth
 
 replace github.com/coreos/go-systemd => github.com/coreos/go-systemd/v22 v22.0.0
 
