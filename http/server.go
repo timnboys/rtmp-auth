@@ -16,9 +16,6 @@ import (
 	"github.com/rakyll/statik/fs"
 	_ "github.com/voc/rtmp-auth/statik"
 	"github.com/timnboys/rtmp-auth/store"
-	"github.com/timnboys/rtmp-auth/services"
-	"golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
 )
 
 type ServerConfig struct {
