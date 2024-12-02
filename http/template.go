@@ -3,7 +3,7 @@ package http
 import (
 	"html/template"
 
-	"github.com/voc/rtmp-auth/storage"
+	"github.com/timnboys/rtmp-auth/storage"
 )
 
 type TemplateData struct {

@@ -21,4 +21,5 @@ require (
 	github.com/rakyll/statik v0.1.7
 	golang.org/x/sys v0.7.0 // indirect
 	google.golang.org/protobuf v1.30.0
+	"github.com/Nerzal/gocloak/v13"
 )

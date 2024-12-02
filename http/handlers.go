@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/gorilla/csrf"
-	"github.com/voc/rtmp-auth/storage"
-	"github.com/voc/rtmp-auth/store"
+	"github.com/timnboys/rtmp-auth/storage"
+	"github.com/timnboys/rtmp-auth/store"
 )
 
 type handleFunc func(http.ResponseWriter, *http.Request)

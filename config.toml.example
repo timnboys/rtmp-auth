@@ -1,4 +1,10 @@
 [http]
+#APIEndpointURL
+api-address=""
+
+#FrontEndAddress
+frontend-address=""
+
 # List of RTMP apps
 applications = ["stream"]
 
@@ -8,15 +14,6 @@ applications = ["stream"]
 # Allow CSRF cookie to be sent across http-connection, not recommended for production
 #insecure = false
 
-#Google OAuth Client ID
-#gl-oauth-cl-id = ""
-
-#Google OAuth Client Secret
-#gl-oauth-cl-secret = ""
-
-#Callback URL
-#gl-oauth-callback-url = ""
-
 [store]
 # Set store backend (file|consul)
 #backend = "file"
@@ -24,3 +21,16 @@ applications = ["stream"]
 [store.file]
 # Configure file storage path relative to working directory
 #path = "store.db"
+
+[keycloak]
+#Keycloak OAuth Client ID
+kc-oauth-cl-id = ""
+
+#Keycloak OAuth Client Secret
+kc-oauth-cl-secret = ""
+
+#Keycloak URL
+keycloakurl = ""
+
+#Keycloak Realm
+keycloakrealm = ""
