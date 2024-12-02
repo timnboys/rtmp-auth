@@ -6,14 +6,14 @@ import (
 	"github.com/timnboys/rtmp-auth/storage"
 )
 
-type TemplateData struct {
+type IndexTemplateData struct {
 	State        *storage.State
 	Config       ServerConfig
 	CsrfTemplate template.HTML
 	Errors       []error
 }
 
-var templates = template.Must(template.New("form.html").Parse(
+var indextemplates = template.Must(template.New("form.html").Parse(
 	`<!DOCTYPE html>
 <html lang="en">
 <head>
