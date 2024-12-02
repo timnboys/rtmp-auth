@@ -13,12 +13,7 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	_ "github.com/voc/rtmp-auth/statik"
-	"github.com/timnboys/rtmp-auth/store"
-	"github.com/timnboys/rtmp-auth/services"
-	"golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
+	//"github.com/timnboys/rtmp-auth/store"
 )
 
 type ServerConfig struct {
@@ -27,10 +22,11 @@ type ServerConfig struct {
 	Insecure     bool     `toml:"insecure"`
 }
 
-type GoogleConfig struct {
-	ClientID 	 string `toml:"gl-oauth-cl-id"`
-	ClientSecret string `toml:"gl-oauth-cl-secret"`
-	CallbackURL  string `toml:"gl-oauth-callback-url"`
+type KeycloakConfig struct {
+	ClientID 	 string `toml:"kc-oauth-cl-id"`
+	ClientSecret string `toml:"kc-oauth-cl-secret"`
+	KeyCloakURL  string `toml:"keycloakurl"`
+	Realm        string `toml:"keycloakrealm"`
 }
 
 type Frontend struct {
@@ -38,7 +34,7 @@ type Frontend struct {
 	done   sync.WaitGroup
 }
 
-func NewFrontend(address string, config ServerConfig, config GoogleConfig, store *store.Store) *Frontend {
+func NewFrontend(address string, config ServerConfig, config KeycloakConfig, store *store.Store) *Frontend {
 	state, err := store.Get()
 	if err != nil {
 		log.Fatal("get", err)

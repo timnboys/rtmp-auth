@@ -13,8 +13,6 @@ import (
 	"github.com/pelletier/go-toml"
 	"github.com/timnboys/rtmp-auth/http"
 	"github.com/timnboys/rtmp-auth/store"
-	"github.com/timnboys/rtmp-auth/googleauthconfig"
-	"github.com/timnboys/rtmp-auth/services"
 	"github.com/Nerzal/gocloak/v13"
 )
 
@@ -54,7 +52,7 @@ type Config struct {
 	FrontendAddress string            `toml:"frontend-address"`
 	Store           store.StoreConfig `toml:"store"`
 	HTTP            http.ServerConfig `toml:"http"`
-	KeyCloak		KeycloakConfig    `toml:"keycloak"`
+	KeyCloak	KeycloakConfig    `toml:"keycloak"`
 }
 
 func main() {
@@ -107,8 +105,8 @@ func main() {
 	}
 	//setup services
 	// Set up servers
-	api := http.NewAPI(config.APIAddress, config.HTTP, config.GoogleAuthConfig, store)
-	frontend := http.NewFrontend(config.FrontendAddress, config.HTTP, config.GoogleAuthConfig, store)
+	api := http.NewAPI(config.APIAddress, config.HTTP, config.KeyCloak, store)
+	frontend := http.NewFrontend(config.FrontendAddress, config.HTTP, config.KeyCloak, store)
 
 	// Periodically expire old streams
 	ticker := time.NewTicker(5 * time.Minute)

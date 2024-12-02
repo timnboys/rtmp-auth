@@ -11,7 +11,7 @@ import (
 
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/consul/api/watch"
-	"github.com/voc/rtmp-auth/storage"
+	//"github.com/timnboys/rtmp-auth/storage"
 	"google.golang.org/protobuf/proto"
 )
 

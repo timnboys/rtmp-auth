@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/voc/rtmp-auth/storage"
 	"google.golang.org/protobuf/proto"
 )
 

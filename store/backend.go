@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/voc/rtmp-auth/storage"
+	//"github.com/timnboys/rtmp-auth/storage"
 )
 
 type Backend interface {

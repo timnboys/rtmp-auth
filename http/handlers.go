@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/gorilla/csrf"
-	"github.com/timnboys/rtmp-auth/storage"
 	"github.com/timnboys/rtmp-auth/store"
 )
 
