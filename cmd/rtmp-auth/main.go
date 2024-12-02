@@ -13,8 +13,6 @@ import (
 	"github.com/pelletier/go-toml"
 	"github.com/timnboys/rtmp-auth/http"
 	"github.com/timnboys/rtmp-auth/store"
-	"github.com/timnboys/rtmp-auth/googleauthconfig"
-	"github.com/timnboys/rtmp-auth/services"
 	"github.com/Nerzal/gocloak/v13"
 )
 
