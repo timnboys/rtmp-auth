@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/timnboys/rtmp-auth/storage"
 	"github.com/gorilla/csrf"
 	"github.com/timnboys/rtmp-auth/store"
 )

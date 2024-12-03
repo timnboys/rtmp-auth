@@ -3,7 +3,7 @@ package http
 import (
 	"html/template"
 
-	//"github.com/timnboys/rtmp-auth/storage"
+	"github.com/timnboys/rtmp-auth/storage"
 )
 
 type TemplateData struct {
@@ -13,7 +13,7 @@ type TemplateData struct {
 	Errors       []error
 }
 
-var templates = template.Must(template.New("form.html").Parse(
+var indextemplates = template.Must(template.New("form.html").Parse(
 	`<!DOCTYPE html>
 <html lang="en">
 <head>

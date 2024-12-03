@@ -5,28 +5,24 @@ import (
 	"log"
 	"sync"
 	"time"
-	"fmt"
-	"html/template"
-	"os"
+	//"fmt"
+	//"html/template"
+	//"os"
 
 	"net/http"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
-	//"github.com/timnboys/rtmp-auth/store"
+	"github.com/rakyll/statik/fs"
+	"github.com/timnboys/rtmp-auth/store"
+	"github.com/timnboys/rtmp-auth/keycl"
 )
 
 type ServerConfig struct {
 	Applications []string `toml:"applications"`
 	Prefix       string   `toml:"prefix"`
 	Insecure     bool     `toml:"insecure"`
-}
-
-type KeycloakConfig struct {
-	ClientID 	 string `toml:"kc-oauth-cl-id"`
-	ClientSecret string `toml:"kc-oauth-cl-secret"`
-	KeyCloakURL  string `toml:"keycloakurl"`
-	Realm        string `toml:"keycloakrealm"`
+	KeyCloak     keycl.KeyCloakConfig `toml:"keycloak"`
 }
 
 type Frontend struct {
@@ -34,7 +30,7 @@ type Frontend struct {
 	done   sync.WaitGroup
 }
 
-func NewFrontend(address string, config ServerConfig, config KeycloakConfig, store *store.Store) *Frontend {
+func NewFrontend(address string, config ServerConfig, store *store.Store) *Frontend {
 	state, err := store.Get()
 	if err != nil {
 		log.Fatal("get", err)
@@ -51,19 +47,17 @@ func NewFrontend(address string, config ServerConfig, config KeycloakConfig, sto
 	}).Subrouter()
 	
 	// instantiate a new controller which is supposed to serve our routes
-	controller := newController(keycloak)
+	controller := newController(config.KeyCloak)
 	
 	// apply middleware
-	mdw := newMiddleware(keycloak)
+	mdw := newMiddleware(config.KeyCloak)
 	sub.Use(mdw.verifyToken)
 	
 	// map url routes to controller's methods
 	noAuthRouter.HandleFunc("/login", func(writer http.ResponseWriter, request *http.Request) {
 		controller.login(writer, request)
 	}).Methods("POST")
-	sub.Path("/").Methods("GET").HandlerFunc(services.HandleMain)
-	sub.Path("/noaccess").HandlerFunc(services.common.HandleNoAccess)
-	sub.Path("/index").Methods("GET").HandlerFunc(FormHandler(store, config))
+	sub.Path("/").Methods("GET").HandlerFunc(FormHandler(store, config))
 	sub.Path("/add").Methods("POST").HandlerFunc(AddHandler(store, config))
 	sub.Path("/remove").Methods("POST").HandlerFunc(RemoveHandler(store, config))
 	sub.Path("/block").Methods("POST").HandlerFunc(BlockHandler(store, config))

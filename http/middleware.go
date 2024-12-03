@@ -1,19 +1,20 @@
-package main
+package http
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 )
+import "github.com/timnboys/rtmp-auth/keycl"
 
 type keyCloakMiddleware struct {
-	keycloak *keycloak
+	keycloak keycl.KeyCloakConfig
 }
 
-func newMiddleware(keycloak *keycloak) *keyCloakMiddleware {
-	return &keyCloakMiddleware{keycloak: keycloak}
+func newMiddleware(KeyCloak keycl.KeyCloakConfig) *keyCloakMiddleware {
+	return &keyCloakMiddleware{keycloak: KeyCloak}
 }
 
 func (auth *keyCloakMiddleware) extractBearerToken(token string) string {
@@ -41,19 +42,19 @@ func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
 		}
 
 		//// call Keycloak API to verify the access token
-		result, err := auth.keycloak.gocloak.RetrospectToken(context.Background(), token, auth.keycloak.clientId, auth.keycloak.clientSecret, auth.keycloak.realm)
+		result, err := auth.keycloak.Client.RetrospectToken(context.Background(), token, auth.keycloak.ClientID, auth.keycloak.ClientSecret, auth.keycloak.Realm)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
 			return
 		}
 
-		jwt, _, err := auth.keycloak.gocloak.DecodeAccessToken(context.Background(), token, auth.keycloak.realm, "")
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
-			return
-		}
+		//jwt, _, err := auth.keycloak.Client.DecodeAccessToken(context.Background(), token, auth.keycloak.Realm)
+		//if err != nil {
+		//	http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
+		//	return
+		//}
 
-		jwtj, _ := json.Marshal(jwt)
+		//jwtj, _ := json.Marshal(jwt)
 
 		// check if the token isn't expired and valid
 		if !*result.Active {

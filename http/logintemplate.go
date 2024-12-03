@@ -3,10 +3,10 @@ package http
 import (
 	"html/template"
 
-	//"github.com/timnboys/rtmp-auth/storage"
+	"github.com/timnboys/rtmp-auth/storage"
 )
 
-type TemplateData struct {
+type LoginPageTemplateData struct {
 	State        *storage.State
 	Config       ServerConfig
 	CsrfTemplate template.HTML

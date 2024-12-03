@@ -1,11 +1,16 @@
-package main
+package http
 
 import (
 	"context"
 	"encoding/json"
 	"net/http"
 	"time"
+
+	//"github.com/pelletier/go-toml"
+	//"github.com/Nerzal/gocloak/v13"	
+        
 )
+import "github.com/timnboys/rtmp-auth/keycl"
 
 type doc struct {
 	Id   string    `json:"id"`
@@ -25,12 +30,12 @@ type loginResponse struct {
 }
 
 type controller struct {
-	keycloak *keycloak
+   keycloak keycl.KeyCloakConfig
 }
 
-func newController(keycloak *keycloak) *controller {
+func newController(conf keycl.KeyCloakConfig) *controller {
 	return &controller{
-		keycloak: keycloak,
+		keycloak: conf,
 	}
 }
 
@@ -43,10 +48,10 @@ func (c *controller) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwt, err := c.keycloak.gocloak.Login(context.Background(),
-		c.keycloak.clientId,
-		c.keycloak.clientSecret,
-		c.keycloak.realm,
+	jwt, err := c.keycloak.Client.Login(context.Background(),
+		c.keycloak.ClientID,
+		c.keycloak.ClientSecret,
+		c.keycloak.Realm,
 		rq.Username,
 		rq.Password)
 
