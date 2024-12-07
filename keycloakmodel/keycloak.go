@@ -1,4 +1,4 @@
-package http
+package keycloakmodel
 
 import(
         //"encoding/json"
@@ -26,12 +26,12 @@ import "github.com/timnboys/rtmp-auth/keycl"
 }
 */
 
-type KeyCloak struct {
+type KeyCloakModel struct {
 	KeyCloak keycl.KeyCloakConfig
 }
 
-func newKeycloak(configid keycl.KeyCloakConfig) *KeyCloak {
-	return &KeyCloak {
-	KeyCloak: configid,
+func NewKeycloak(id keycl.KeyCloakConfig) *KeyCloakModel {
+	return &KeyCloakModel {
+	KeyCloak: id,
 	}
 }

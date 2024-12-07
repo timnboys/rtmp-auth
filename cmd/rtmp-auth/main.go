@@ -14,6 +14,7 @@ import (
 	"github.com/timnboys/rtmp-auth/http"
 	"github.com/timnboys/rtmp-auth/keycl"
 	"github.com/timnboys/rtmp-auth/store"
+	//"github.com/timnboys/rtmp-auth/keycloakmodel"
 	//"github.com/Nerzal/gocloak/v13"
 )
 
@@ -47,11 +48,12 @@ type Config struct {
 	FrontendAddress string            `toml:"frontend-address"`
 	Store           store.StoreConfig `toml:"store"`
 	HTTP            http.ServerConfig `toml:"http"`
-	KeyCloak	keycl.KeyCloakConfig `toml:"keycloak"`
+	KeyCloak        keycl.KeyCloakConfig `toml:"keycloak"`
 }
 
 func main() {
 	// default config
+	//kcurl := `toml:"keycloakurl"`
 	config := Config{
 		APIAddress:      "localhost:8080",
 		FrontendAddress: "localhost:8082",
@@ -61,6 +63,13 @@ func main() {
 				Path: "store.db",
 			},
 		},
+	      	   KeyCloak: keycl.KeyCloakConfig{
+			KeyCloakURL: `toml:"keycloakurl"`,
+			ClientID: `toml:"kc-oauth-cl-id"`,
+			ClientSecret: `toml:"kc-oauth-cl-secret"`,
+			Realm: `toml:"keycloakrealm"`,
+	      },
+		
 	}
 	var configPath = flag.String("config", "config.toml", "Config toml")
 	var apiAddr = flag.String("apiAddr", "", "API bind address")
@@ -101,7 +110,7 @@ func main() {
 	//setup services
 	// Set up servers
 	api := http.NewAPI(config.APIAddress, config.HTTP, store)
-	frontend := http.NewFrontend(config.FrontendAddress, config.HTTP, store)
+	frontend := http.NewFrontend(config.FrontendAddress, config.HTTP, config.KeyCloak, store)
 
 	// Periodically expire old streams
 	ticker := time.NewTicker(5 * time.Minute)

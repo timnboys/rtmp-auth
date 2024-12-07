@@ -10,10 +10,18 @@ import (
 	"sort"
 	"strconv"
 	"time"
+	"html/template"
+	//"path"
 
 	"github.com/timnboys/rtmp-auth/storage"
 	"github.com/gorilla/csrf"
 	"github.com/timnboys/rtmp-auth/store"
+	"github.com/timnboys/rtmp-auth/keycl"
+	//"github.com/timnboys/rtmp-auth/assets"
+	"context"
+	"github.com/zemirco/keycloak"
+    	"golang.org/x/oauth2"
+	//"github.com/Nerzal/gocloak/v13"
 )
 
 type handleFunc func(http.ResponseWriter, *http.Request)
@@ -222,6 +230,151 @@ func FormHandler(store *store.Store, config ServerConfig) handleFunc {
 	}
 }
 
+func LoginFormHandler(store *store.Store, config ServerConfig, cfg keycl.KeyCloakConfig) handleFunc {
+        return func(w http.ResponseWriter, r *http.Request) {
+		/*
+                var errs []error
+                state, err := store.Get()
+                if err != nil {
+                        errs = append(errs, err)
+                }
+
+                sort.SliceStable(state.Streams, func(i, j int) bool {
+                        return state.Streams[i].Name < state.Streams[j].Name
+                })
+		err = templates.ExecuteTemplate(w, "public/logon.html", nil)
+		if err != nil {
+                        log.Println("Template failed", err)
+                }
+		//w.Write([]byte("The Login Page should have appeared..."))
+		*/
+		tmpl, err := template.ParseFiles("public/login.html")
+                        if err != nil {
+                        http.Error(w, err.Error(), http.StatusInternalServerError)
+                        return
+                        }
+               tmpl.Execute(w, nil)
+		/*
+                data := LoginPageTemplateData{
+                        State:        state,
+                        Config:       config,
+                        CsrfTemplate: csrf.TemplateField(r),
+                        Errors:       errs,
+                }
+		fp := path.Join("public", "index.html")
+   		tmpl, err := template.ParseFiles(fp)
+    		if err != nil {
+        	http.Error(w, err.Error(), http.StatusInternalServerError)
+        	return
+    		}
+
+		if err := tmpl.Execute(w, fp); err != nil {
+        	http.Error(w, err.Error(), http.StatusInternalServerError)
+    		}
+                err = templates.ExecuteTemplate(w, "logon.html", data)
+                if err != nil {
+                        log.Println("Template failed", err)
+                }
+		*/
+        }
+}
+
+// LoginPage is the handler for the login page.
+func LoginHandler(store *store.Store, config keycl.KeyCloakConfig) handleFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodPost {
+        username := r.FormValue("username")
+        password := r.FormValue("password")
+
+        // Perform authentication logic here (e.g., check against a database).
+	//ctx := context.Background()
+	// create your oauth configuration
+    keyclconfig := oauth2.Config{
+        ClientID: "admin-cli",
+        Endpoint: oauth2.Endpoint{
+            TokenURL: config.KeyCloakTokenURL,
+        },
+    }
+
+    // get a valid token from keycloak
+    token, err := keyclconfig.PasswordCredentialsToken(context.Background(), username, password)
+    if err != nil {
+			state, err := store.Get()
+			data := LoginPageTemplateData{
+				State:        state,
+				//Config:       config,
+				CsrfTemplate: csrf.TemplateField(r),
+				//Errors:       err,
+			}
+			//err = w.Write([]byte())
+			err = templates.ExecuteTemplate(w, "public/login.html", data)
+			if err != nil {
+				log.Println("Template failed", err)
+				fmt.Println("Template failed", err)
+			}
+    }
+
+	// create a new http client
+	httpClient := keyclconfig.Client(context.Background(), token)
+	// use the http client to create a Keycloak instance
+	kc, err := keycloak.NewKeycloak(httpClient, config.KeyCloakURL)
+	if err != nil {
+		panic(err)
+		fmt.Println(err)
+	}
+
+	// then use this instance to make requests to the API
+	fmt.Println(kc)// use the http client to create a Keycloak instance
+
+    // create a new http client that uses the token on every request
+    	//client := keyclconfig.Client(context.Background(), token)
+	// create a new keycloak instance and provide the http client
+	/*
+	k, err := keycloak.NewKeycloak(client, config.KeyCloakURL)
+    	if err != nil {
+        fmt.Fprintf(w, "Invalid credentials. Please try again.")
+        tmpl, err := template.ParseFiles("templates/login.html")
+        if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+        }
+        tmpl.Execute(w, nil)
+    	}
+	//keycl.KeyCloakConfig.Client := k
+	
+
+        // Invalid credentials, show the login page with an error message.
+        fmt.Fprintf(w, "Invalid credentials. Please try again.")
+	tmpl, err := template.ParseFiles("templates/login.html")
+	if err != nil {
+	http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+	}
+	tmpl.Execute(w, nil)
+    }
+	// get the client to have all properties
+	client, res, err = kc.Clients.Get(ctx, realm, id)
+	if err != nil {
+		//panic(err)
+	fmt.Fprintf(w, "Invalid credentials. Please try again.")
+        tmpl, err := template.ParseFiles("templates/login.html")
+        if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+        }
+        tmpl.Execute(w, nil)
+	}
+*/
+    // If not a POST request, serve the login page template.
+    //tmpl, err := template.ParseFiles("login.html")
+    //if err != nil {
+    //    http.Error(w, err.Error(), http.StatusInternalServerError)
+    //    return
+    }
+    //tmpl.Execute(w, nil)
+    }
+}
+
 func AddHandler(store *store.Store, config ServerConfig) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var errs []error
@@ -258,7 +411,7 @@ func AddHandler(store *store.Store, config ServerConfig) handleFunc {
 		if err != nil {
 			errs = append(errs, err)
 		}
-		data := TemplateData{
+		data := LoginPageTemplateData{
 			State:        state,
 			Config:       config,
 			CsrfTemplate: csrf.TemplateField(r),

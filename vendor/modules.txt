@@ -54,6 +54,9 @@ github.com/golang-jwt/jwt/v5
 ## explicit
 # github.com/google/go-cmp v0.6.0
 ## explicit; go 1.13
+# github.com/google/go-querystring v1.1.0
+## explicit; go 1.10
+github.com/google/go-querystring/query
 # github.com/google/gofuzz v1.0.0
 ## explicit; go 1.12
 # github.com/google/uuid v1.3.0
@@ -198,11 +201,18 @@ github.com/segmentio/ksuid
 ## explicit; go 1.13
 # github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926
 ## explicit
+# github.com/zemirco/keycloak v1.1.0
+## explicit; go 1.17
+github.com/zemirco/keycloak
 # golang.org/x/crypto v0.29.0
 ## explicit; go 1.20
 # golang.org/x/net v0.31.0
 ## explicit; go 1.18
 golang.org/x/net/publicsuffix
+# golang.org/x/oauth2 v0.24.0
+## explicit; go 1.18
+golang.org/x/oauth2
+golang.org/x/oauth2/internal
 # golang.org/x/sync v0.9.0
 ## explicit; go 1.18
 # golang.org/x/sys v0.27.0
@@ -253,6 +263,9 @@ google.golang.org/protobuf/runtime/protoimpl
 ## explicit
 # gopkg.in/resty.v1 v1.10.3
 ## explicit
+# gopkg.in/unrolled/render.v1 v1.0.0
+## explicit
+gopkg.in/unrolled/render.v1
 # gopkg.in/yaml.v2 v2.2.8
 ## explicit
 # gopkg.in/yaml.v3 v3.0.1

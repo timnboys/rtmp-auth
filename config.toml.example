@@ -32,5 +32,8 @@ kc-oauth-cl-secret = ""
 #Keycloak URL
 keycloakurl = ""
 
+#KeyCloak Token URL
+keycloaktokenurl = ""
+
 #Keycloak Realm
 keycloakrealm = ""

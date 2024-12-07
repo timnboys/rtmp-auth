@@ -2,10 +2,17 @@ package http
 
 import (
 	"context"
-	//"encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"html/template"
+	//"os"
+	"github.com/Nerzal/gocloak/v13"
+	//"github.com/timnboys/rtmp-auth/storage"
+	//"github.com/gorilla/csrf"
+	//"github.com/timnboys/rtmp-auth/store"
+	//"gopkg.in/unrolled/render.v1"
 )
 import "github.com/timnboys/rtmp-auth/keycl"
 
@@ -24,12 +31,20 @@ func (auth *keyCloakMiddleware) extractBearerToken(token string) string {
 func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
-
+		//r := render.New(render.Options{})
 		// try to extract Authorization parameter from the HTTP header
 		token := r.Header.Get("Authorization")
 
 		if token == "" {
-			http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+			//http.Redirect(w, r, "https://"+r.Host+"/public/login.html", http.StatusMovedPermanently)
+			//http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+			// If not a POST request, serve the login page template.
+    			tmpl, err := template.ParseFiles("public/login.html")
+    			if err != nil {
+        		http.Error(w, err.Error(), http.StatusInternalServerError)
+        		return
+    			}
+    			tmpl.Execute(w, nil)
 			return
 		}
 
@@ -48,11 +63,11 @@ func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
 			return
 		}
 
-		//jwt, _, err := auth.keycloak.Client.DecodeAccessToken(context.Background(), token, auth.keycloak.Realm)
-		//if err != nil {
-		//	http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
-		//	return
-		//}
+		jwt, _, err := auth.keycloak.Client.DecodeAccessToken(context.Background(), token, auth.keycloak.Realm)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
+			return
+		}
 
 		//jwtj, _ := json.Marshal(jwt)
 
@@ -62,8 +77,58 @@ func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
 			return
 		}
 
+		fmt.Println("JWT ", jwt)
+		fmt.Println("Token ", token)
+
+		/*
+		rs := &loginResponse{
+		AccessToken:  jwt.AccessToken,
+		RefreshToken: jwt.RefreshToken,
+		ExpiresIn:    jwt.ExpiresIn,
+		}
+
+		rsJs, _ := json.Marshal(rs)
+		*/
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Authorization", "Bearer " + token)
 		next.ServeHTTP(w, r)
 	}
 
 	return http.HandlerFunc(f)
+}
+
+type LoginResponse struct {
+   AccessToken string `json:”access_token”`
+   Title string `json:”Title”`
+   Description string `json:”Description”`
+}
+
+
+func (auth *keyCloakMiddleware) Protect(next http.Handler) http.Handler {
+   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+       client := gocloak.NewClient(auth.keycloak.KeyCloakURL)
+       authHeader := r.Header.Get("Authorization")
+       if len(authHeader) < 1 {
+          w.WriteHeader(401)
+         json.NewEncoder(w).Encode("Error, Unauthorized")
+         return
+      }
+     accessToken := strings.Split(authHeader," ")[1]
+     rptResult, err := client.RetrospectToken(r.Context(),
+     accessToken, auth.keycloak.ClientID, auth.keycloak.ClientSecret, auth.keycloak.Realm)
+     if err != nil{
+      w.WriteHeader(400)
+      json.NewEncoder(w).Encode(err.Error())
+      return
+     }
+    isTokenValid := *rptResult.Active
+    if !isTokenValid {
+      w.WriteHeader(401)
+      json.NewEncoder(w).Encode("Error, Unauthorized")
+      return
+    }
+    next.ServeHTTP(w, r)
+  })
 }

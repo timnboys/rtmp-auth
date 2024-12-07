@@ -13,7 +13,7 @@ type LoginPageTemplateData struct {
 	Errors       []error
 }
 
-var templates = template.Must(template.New("form.html").Parse(
+var templates = template.Must(template.New("logon.html").Parse(
 	`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,14 +24,16 @@ var templates = template.Must(template.New("form.html").Parse(
   <link rel="stylesheet" type="text/css" href="{{.Config.Prefix}}/public/main.css">
 </head>
 <body>
-  <div class="container">
-    <h1><a href="{{$.Config.Prefix}}">rtmp-auth</a></h1>
-    <p>
-			Login with the following,
-	</p>
-	<ul>
-			<li><a href="/login-gl">Google</a></li>
-	</ul>
+<div class="login-container">
+        <h2>Login</h2>
+        <form action="/login" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 <script src="{{.Config.Prefix}}/public/main.js"></script>
 </body>
 </html>`))

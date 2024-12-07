@@ -11,18 +11,19 @@ import (
 
 	"net/http"
 
-	"github.com/gorilla/csrf"
+	//"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	_ "github.com/timnboys/rtmp-auth/statik"
 	"github.com/timnboys/rtmp-auth/store"
 	"github.com/timnboys/rtmp-auth/keycl"
+	//"gopkg.in/unrolled/render.v1"
 )
 
 type ServerConfig struct {
 	Applications []string `toml:"applications"`
 	Prefix       string   `toml:"prefix"`
 	Insecure     bool     `toml:"insecure"`
-	KeyCloak     keycl.KeyCloakConfig `toml:"keycloak"`
 }
 
 type Frontend struct {
@@ -30,34 +31,43 @@ type Frontend struct {
 	done   sync.WaitGroup
 }
 
-func NewFrontend(address string, config ServerConfig, store *store.Store) *Frontend {
-	state, err := store.Get()
-	if err != nil {
-		log.Fatal("get", err)
-	}
-	CSRF := csrf.Protect(state.Secret, csrf.Secure(!config.Insecure))
+func NewFrontend(address string, config ServerConfig, cfg keycl.KeyCloakConfig, store *store.Store) *Frontend {
+	//state, err := store.Get()
+	//if err != nil {
+	//	log.Fatal("get", err)
+	//}
+	//CSRF := csrf.Protect(state.Secret, csrf.Secure(!config.Insecure))
 	statikFS, err := fs.New()
 	if err != nil {
 		log.Fatal(err)
 	}
+	//r := render.New(render.Options{})
 	router := mux.NewRouter()
 	sub := router.PathPrefix(config.Prefix).Subrouter()
-	noAuthRouter := router.MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
-		return r.Header.Get("Authorization") == ""
-	}).Subrouter()
+	//noAuthRouter := sub.MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
+	//	return r.Header.Get("Authorization") == ""
+	//}).Subrouter()
 	
 	// instantiate a new controller which is supposed to serve our routes
-	controller := newController(config.KeyCloak)
+	//controller := newController(cfg)
 	
 	// apply middleware
-	mdw := newMiddleware(config.KeyCloak)
+	mdw := newMiddleware(cfg)
 	sub.Use(mdw.verifyToken)
 	
 	// map url routes to controller's methods
-	noAuthRouter.HandleFunc("/login", func(writer http.ResponseWriter, request *http.Request) {
-		controller.login(writer, request)
-	}).Methods("POST")
+	/*
+	sub.Path("/login").Methods("GET").HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		//controller.login(writer, request)
+		w.Write([]byte("Testing...."))
+		//r.HTML(w, http.StatusOK, "login.html", nil)
+	})
+	*/
+	//log.Println("Public Files for Login ", statikFS)
 	sub.Path("/").Methods("GET").HandlerFunc(FormHandler(store, config))
+	sub.Path("/login").Methods("POST").HandlerFunc(LoginHandler(store,cfg))
+	sub.Path("/login").Methods("GET").HandlerFunc(LoginFormHandler(store,config,cfg))
+	//sub.Path("/login").Methods("GET").HandlerFunc(LoginHandler(store,cfg))
 	sub.Path("/add").Methods("POST").HandlerFunc(AddHandler(store, config))
 	sub.Path("/remove").Methods("POST").HandlerFunc(RemoveHandler(store, config))
 	sub.Path("/block").Methods("POST").HandlerFunc(BlockHandler(store, config))
@@ -66,7 +76,7 @@ func NewFrontend(address string, config ServerConfig, store *store.Store) *Front
 
 	frontend := &Frontend{
 		server: &http.Server{
-			Handler:      CSRF(router),
+			Handler:      router,
 			Addr:         address,
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,
