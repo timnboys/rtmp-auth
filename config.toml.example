@@ -32,8 +32,9 @@ kc-oauth-cl-secret = ""
 #Keycloak URL
 keycloakurl = ""
 
-#KeyCloak Token URL
-keycloaktokenurl = ""
+#Frondend App Address, use the same above as frontend-address
+# like this example https://myexample.com
+appfrontendurl = ""
 
 #Keycloak Realm
 keycloakrealm = ""

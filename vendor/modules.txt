@@ -27,6 +27,9 @@ github.com/armon/go-metrics
 ## explicit
 # github.com/circonus-labs/circonusllhist v0.1.3
 ## explicit
+# github.com/coreos/go-oidc v2.2.1+incompatible
+## explicit
+github.com/coreos/go-oidc
 # github.com/creack/pty v1.1.9
 ## explicit; go 1.13
 # github.com/davecgh/go-spew v1.1.1
@@ -141,6 +144,8 @@ github.com/mattn/go-isatty
 ## explicit
 # github.com/miekg/dns v1.1.41
 ## explicit; go 1.13
+# github.com/mitch-strong/keycloakgo v0.0.0-20180129155959-244449ee67a7
+## explicit
 # github.com/mitchellh/cli v1.1.0
 ## explicit; go 1.11
 # github.com/mitchellh/go-homedir v1.1.0
@@ -175,6 +180,10 @@ github.com/pkg/errors
 ## explicit
 # github.com/posener/complete v1.2.3
 ## explicit; go 1.13
+# github.com/pquerna/cachecontrol v0.2.0
+## explicit; go 1.16
+github.com/pquerna/cachecontrol
+github.com/pquerna/cachecontrol/cacheobject
 # github.com/prometheus/client_golang v1.4.0
 ## explicit; go 1.11
 # github.com/prometheus/client_model v0.2.0
@@ -206,6 +215,8 @@ github.com/segmentio/ksuid
 github.com/zemirco/keycloak
 # golang.org/x/crypto v0.29.0
 ## explicit; go 1.20
+golang.org/x/crypto/ed25519
+golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.31.0
 ## explicit; go 1.18
 golang.org/x/net/publicsuffix
@@ -263,9 +274,13 @@ google.golang.org/protobuf/runtime/protoimpl
 ## explicit
 # gopkg.in/resty.v1 v1.10.3
 ## explicit
+# gopkg.in/square/go-jose.v2 v2.6.0
+## explicit
+gopkg.in/square/go-jose.v2
+gopkg.in/square/go-jose.v2/cipher
+gopkg.in/square/go-jose.v2/json
 # gopkg.in/unrolled/render.v1 v1.0.0
 ## explicit
-gopkg.in/unrolled/render.v1
 # gopkg.in/yaml.v2 v2.2.8
 ## explicit
 # gopkg.in/yaml.v3 v3.0.1

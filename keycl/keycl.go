@@ -21,6 +21,6 @@ type KeyCloakConfig struct {
         ClientID     string `toml:"kc-oauth-cl-id"`
         ClientSecret string `toml:"kc-oauth-cl-secret"`
         KeyCloakURL  string `toml:"keycloakurl"`
-	KeyCloakTokenURL  string `toml:"keycloaktokenurl"`
+	FrontendAppAddress  string `toml:"appfrontendurl"`
         Realm        string `toml:"keycloakrealm"`
 }

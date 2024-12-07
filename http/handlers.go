@@ -205,10 +205,35 @@ func UnpublishHandler(store *store.Store) handleFunc {
 	}
 }
 
+func FormHandlerTest(store *store.Store, config ServerConfig) handleFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+                log.Println("Detected Form Handler Calling, let's hope this works")
+		var errs []error
+                state, err := store.Get()
+                if err != nil {
+                        errs = append(errs, err)
+                }
+		log.Println("Detected Form Handler Calling, let's hope this works...So Far So Good....Make Template Now...")
+
+		data := TemplateData{
+                        State:        state,
+                        Config:       config,
+                        CsrfTemplate: csrf.TemplateField(r),
+                        Errors:       errs,
+                }
+                err = templates.ExecuteTemplate(w, "form.html", data)
+                if err != nil {
+		log.Fatal("Failure Executing Template", err)
+		}
+	}
+}
+
+
 func FormHandler(store *store.Store, config ServerConfig) handleFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var errs []error
 		state, err := store.Get()
+		//fmt.Println("Detected Form Handler Calling, let's hope this works")
 		if err != nil {
 			errs = append(errs, err)
 		}
@@ -216,6 +241,8 @@ func FormHandler(store *store.Store, config ServerConfig) handleFunc {
 		sort.SliceStable(state.Streams, func(i, j int) bool {
 			return state.Streams[i].Name < state.Streams[j].Name
 		})
+
+		//fmt.Println("Detected Form Handler Calling, let's hope this works...So Far So Good....Make Template Now...")
 
 		data := TemplateData{
 			State:        state,
@@ -225,8 +252,10 @@ func FormHandler(store *store.Store, config ServerConfig) handleFunc {
 		}
 		err = templates.ExecuteTemplate(w, "form.html", data)
 		if err != nil {
-			log.Println("Template failed", err)
+			log.Fatal("Template Failed", err)
+			//log.Println("Template failed", err)
 		}
+		//log.Println("Should have worked?", err)
 	}
 }
 
@@ -292,7 +321,7 @@ func LoginHandler(store *store.Store, config keycl.KeyCloakConfig) handleFunc {
     keyclconfig := oauth2.Config{
         ClientID: "admin-cli",
         Endpoint: oauth2.Endpoint{
-            TokenURL: config.KeyCloakTokenURL,
+            //TokenURL: config.KeyCloakTokenURL,
         },
     }
 

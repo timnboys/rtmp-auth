@@ -11,12 +11,13 @@ import (
 
 	"net/http"
 
-	//"github.com/gorilla/csrf"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	_ "github.com/timnboys/rtmp-auth/statik"
 	"github.com/timnboys/rtmp-auth/store"
 	"github.com/timnboys/rtmp-auth/keycl"
+	"github.com/timnboys/rtmp-auth/keycloak"
 	//"gopkg.in/unrolled/render.v1"
 )
 
@@ -32,11 +33,11 @@ type Frontend struct {
 }
 
 func NewFrontend(address string, config ServerConfig, cfg keycl.KeyCloakConfig, store *store.Store) *Frontend {
-	//state, err := store.Get()
-	//if err != nil {
-	//	log.Fatal("get", err)
-	//}
-	//CSRF := csrf.Protect(state.Secret, csrf.Secure(!config.Insecure))
+	state, err := store.Get()
+	if err != nil {
+		log.Fatal("get", err)
+	}
+	CSRF := csrf.Protect(state.Secret, csrf.Secure(!config.Insecure))
 	statikFS, err := fs.New()
 	if err != nil {
 		log.Fatal(err)
@@ -52,8 +53,10 @@ func NewFrontend(address string, config ServerConfig, cfg keycl.KeyCloakConfig, 
 	//controller := newController(cfg)
 	
 	// apply middleware
-	mdw := newMiddleware(cfg)
-	sub.Use(mdw.verifyToken)
+	var kcsvurl = cfg.KeyCloakURL
+	var kcappurl = cfg.FrontendAppAddress
+	keycloak.InitKeyCloak(kcsvurl,kcappurl,cfg)
+	sub.Use(keycloak.AuthMiddleware)
 	
 	// map url routes to controller's methods
 	/*
@@ -63,10 +66,13 @@ func NewFrontend(address string, config ServerConfig, cfg keycl.KeyCloakConfig, 
 		//r.HTML(w, http.StatusOK, "login.html", nil)
 	})
 	*/
+
 	//log.Println("Public Files for Login ", statikFS)
 	sub.Path("/").Methods("GET").HandlerFunc(FormHandler(store, config))
-	sub.Path("/login").Methods("POST").HandlerFunc(LoginHandler(store,cfg))
-	sub.Path("/login").Methods("GET").HandlerFunc(LoginFormHandler(store,config,cfg))
+	//sub.Path("/login").Methods("POST").HandlerFunc(LoginHandler(store,cfg))
+	//sub.Path("/login").Methods("GET").HandlerFunc(keycloak.HandleLogin)
+	sub.Path("/loginCallback").Methods("GET").HandlerFunc(keycloak.HandleLoginCallback)
+	sub.Path("/logout").Methods("GET").HandlerFunc(keycloak.Logout)
 	//sub.Path("/login").Methods("GET").HandlerFunc(LoginHandler(store,cfg))
 	sub.Path("/add").Methods("POST").HandlerFunc(AddHandler(store, config))
 	sub.Path("/remove").Methods("POST").HandlerFunc(RemoveHandler(store, config))
@@ -76,7 +82,7 @@ func NewFrontend(address string, config ServerConfig, cfg keycl.KeyCloakConfig, 
 
 	frontend := &Frontend{
 		server: &http.Server{
-			Handler:      router,
+			Handler:      CSRF(router),
 			Addr:         address,
 			WriteTimeout: 15 * time.Second,
 			ReadTimeout:  15 * time.Second,

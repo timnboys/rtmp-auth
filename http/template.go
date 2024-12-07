@@ -13,7 +13,7 @@ type TemplateData struct {
 	Errors       []error
 }
 
-var indextemplates = template.Must(template.New("form.html").Parse(
+var templates = template.Must(template.New("form.html").Parse(
 	`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +26,7 @@ var indextemplates = template.Must(template.New("form.html").Parse(
 <body>
   <div class="container">
     <h1><a href="{{$.Config.Prefix}}">rtmp-auth</a></h1>
+    <h1><a href="{{$.Config.Prefix}}/logout">Logout</a></h1>
     <h2>Streams</h2>
 
     <div class="row">

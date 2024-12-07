@@ -13,7 +13,7 @@ type LoginPageTemplateData struct {
 	Errors       []error
 }
 
-var templates = template.Must(template.New("logon.html").Parse(
+var logintemplates = template.Must(template.New("logon.html").Parse(
 	`<!DOCTYPE html>
 <html lang="en">
 <head>
